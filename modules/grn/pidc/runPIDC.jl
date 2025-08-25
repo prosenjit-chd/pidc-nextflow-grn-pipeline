@@ -3,7 +3,7 @@ using LightGraphs
 
 algorithm = PIDCNetworkInference()
 
-dataset_name = string(ARGS[1])  # Input TSV file
+dataset_name = string(ARGS[1])
 
 @time genes = get_nodes(dataset_name);
 @time network = InferredNetwork(algorithm, genes);

@@ -1,4 +1,4 @@
-# 🔬 PIDC Gene Regulatory Network Inference Pipeline (Nextflow)
+# 🧬 PIDC Gene Regulatory Network Inference Pipeline (Nextflow)
 
 This project implements the **PIDC (Partial Information Decomposition and Context)** algorithm for gene regulatory network (GRN) inference from single-cell RNA-seq data using a **Nextflow DSL2 pipeline**. It supports `.h5ad` format as input and outputs a ranked list of gene-gene regulatory relationships.
 
@@ -133,14 +133,10 @@ gene_comparison.png
 **Prosenjit Chowdhury**
 M.Sc. Artificial Intelligence – FAU Erlangen-Nürnberg
 Working Student @ SAP ERP PCX
-🌍 Erlangen, Germany
+Erlangen, Germany
 🔗 GitHub: [@prosenjit-chowdhury](https://github.com/prosenjit-chowdhury)
 
 ---
-
-## 🧠 License
-
-This project is licensed under the MIT License. See [`LICENSE`](LICENSE) for details.
 
 ```
 
