@@ -119,7 +119,7 @@ Each line represents a predicted regulatory edge.
 
 📂 After successfully running the pipeline, you’ll get a file like:
 
-![alt text](<PIDC Output-1.png>)
+![PIDC Output Screenshot](PIDC_Output-1.png)
 
 ---
 
