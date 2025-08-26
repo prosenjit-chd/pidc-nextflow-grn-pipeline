@@ -1,50 +1,60 @@
 nextflow.enable.dsl=2
 
-// PARAMETERS
-params.expression_h5ad = null
-params.prefix = "pidc_output"
+workflow {
+  convert_h5ad_to_pidc_inputs(
+    file("input/filtered_placeholder.h5ad")
+  )
 
-// PROCESS
-process PIDC {
-  tag "$prefix"
-  publishDir "results", mode: 'copy'
+  run_pidc(
+    convert_h5ad_to_pidc_inputs.out.expression
+  )
+}
+
+process convert_h5ad_to_pidc_inputs {
+  tag "PIDC: Convert Input"
+
+  // === CONTAINER MODE === 
+  container "community.wave.seqera.io/library/anndata_numpy_pandas_pip_pruned:c5c0484dba547ab3"
+
+  // === CONDA MODE ===
+  // conda "modules/grn/pidc/pidc_env.yml"
 
   input:
   path expression_h5ad
-  val prefix
-  path convert_script
-  path run_script
-  path pidc_julia_script
 
   output:
-  path "${prefix}_rankedEdges.csv"
+  path "expression.tsv", emit: expression
 
   script:
+  def script_path = "${workflow.projectDir}/modules/grn/pidc/h5ad_to_pidc_inputs.py"
   """
-  echo "Using Python from: \$(which python)"
-  python3 -c "import scanpy; print('scanpy is available')"
-
-  python3 ${convert_script} ${expression_h5ad} expression.tsv
-  bash ${run_script} expression.tsv ${prefix}_rankedEdges.csv
+  python3 $script_path \\
+    --input ${expression_h5ad} \\
+    --output expression.tsv
   """
 }
 
-// WORKFLOW
-workflow {
-  Channel
-    .fromPath(params.expression_h5ad)
-    .ifEmpty { error "File not found: ${params.expression_h5ad}" }
-    .set { expression_h5ad_ch }
+process run_pidc {
+  tag "PIDC: Run"
 
-  convert_script_ch = Channel.value(file("scripts/h5ad_to_tsv.py"))
-  run_script_ch     = Channel.value(file("modules/grn/pidc/run_pidc.sh"))
-  julia_script_ch   = Channel.value(file("modules/grn/pidc/runPIDC.jl")) 
+  // === CONTAINER MODE === 
+  container "community.wave.seqera.io/library/anndata_numpy_pandas_pip_pruned:c5c0484dba547ab3"
 
-  PIDC(
-    expression_h5ad_ch,
-    params.prefix,
-    convert_script_ch,
-    run_script_ch,
-    julia_script_ch
-  )
+  // === CONDA MODE ===
+  // conda "modules/grn/pidc/pidc_env.yml"
+
+  publishDir "results", mode: 'copy'
+
+  input:
+  path "expression.tsv"
+
+  output:
+  path "pidc_ranked_edges.csv"
+
+  script:
+  def script_path = "${workflow.projectDir}/modules/grn/pidc/run_pidc.py"
+  """
+  python3 $script_path --input expression.tsv --output pidc_ranked_edges.csv
+  """
 }
+
